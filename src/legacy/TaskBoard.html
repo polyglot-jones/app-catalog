@@ -47,7 +47,7 @@ function initTaskboard() {
     };
 
     var insideRally = RALLY.toolkit.insideRally();
-    var showActuals = false;
+    var showActuals = true;
     var currentProjectOid = '__PROJECT_OID__';
     var projectScopeUp = '__PROJECT_SCOPING_UP__' == 'true';
     var projectScopeDown = '__PROJECT_SCOPING_DOWN__' == 'true';
@@ -178,7 +178,7 @@ function initTaskboard() {
             html.push(renderTimeCell((schema.TaskEstimateTotal) ? schema.TaskEstimateTotal.DisplayName : 'Est', value.TaskEstimateTotal, timeClass.join(' ')));
             html.push(renderTimeCell((schema.TaskRemainingTotal) ? schema.TaskRemainingTotal.DisplayName : 'To Do', value.TaskRemainingTotal, timeClass.join(' ')));
             if (showActuals) {
-                html.push(renderTimeCell((schema.TaskActualTotal) ? schema.TaskActualTotal.DisplayName : 'Actuals', value.TaskActualTotal, timeClass.join(' ')));
+                html.push(renderTimeCell((schema.TaskActualTotal) ? schema.TaskActualTotal.DisplayName : 'Act', value.TaskActualTotal, timeClass.join(' ')));
             }
 
             html.push('<div class="clear"></div>');
@@ -215,7 +215,11 @@ function initTaskboard() {
 
             // owner could be an object literal, or a string (if the user has been deleted in the app)
             if (!item.Owner) {
-                ownerClass.push('de-emphasis');
+            	if (item.State == 'Defined') {
+             	   ownerClass.push('de-emphasis');
+            	} else {
+             	   ownerClass.push('missing');
+            	}
                 owner = gridController.noOwnerLabel;
             } else if (Lang.isObject(item.Owner)) {
                 owner = item.Owner._refObjectName;
@@ -227,11 +231,22 @@ function initTaskboard() {
             if (item.Blocked) {
                 taskClass.push('rally-task-blocked');
             }
+
+            var taskIsDone = false;
+            var taskIsWorking = false;
             if (item.State == 'Defined') {
                 todoClass.push('de-emphasis');
                 actClass.push('de-emphasis');
             } else if (item.State == 'Completed') {
                 todoClass.push('de-emphasis');
+            } else {
+            	if (item.ToDo == 0) {
+            		taskIsDone = true;
+                	taskClass.push('rally-task-done');
+                } else if (item.Actuals >= 0.05) {
+                	taskIsWorking = true;
+                	taskClass.push('rally-task-working');
+                }
             }
 
             if (item.WorkProduct && item.WorkProduct.ScheduleState == 'Accepted') {
@@ -262,7 +277,7 @@ function initTaskboard() {
             html.push(renderTimeCell((schema.Estimate) ? schema.Estimate.ShortName : 'Est', item.Estimate, estClass.join(' ')));
             html.push(renderTimeCell((schema.ToDo) ? schema.ToDo.ShortName : 'To Do', item.ToDo, todoClass.join(' ')));
             if (showActuals) {
-                html.push(renderTimeCell((schema.Actuals) ? schema.Actuals.ShortName : 'Actuals', item.Actuals, actClass.join(' ')));
+                html.push(renderTimeCell((schema.Actuals) ? schema.Actuals.ShortName : 'Act', item.Actuals, actClass.join(' ')));
             }
             html.push('<div class="clear"></div>');
             html.push('</div>');
@@ -270,6 +285,15 @@ function initTaskboard() {
 
             if (item.Blocked) {
                 html.push('<img class="blocked-icon" src="' + RALLY.toolkit.Connection.getServerURL() + '/images/icon_blocked.gif" alt="Blocked" />');
+                html.push('<div class="clear"></div>');
+            }
+
+            if (taskIsDone) {
+                html.push('<div><span>RECENTLY COMPLETED</span></div>');
+                html.push('<div class="clear"></div>');
+            }
+            if (taskIsWorking) {
+                html.push('<div><span>ACTUALLY STARTED</span></div>');
                 html.push('<div class="clear"></div>');
             }
 
@@ -1029,6 +1053,9 @@ YAHOO.util.Event.addListener(window, 'load', initTaskboard);
     .de-emphasis {
         color: #999;
     }
+    .missing {
+        color: #FF0000;
+    }
 
     .rally-time {
         float: left;
@@ -1117,6 +1144,24 @@ YAHOO.util.Event.addListener(window, 'load', initTaskboard);
     .rally-task-accepted {
         background-color: #ececec;
         border: 1px solid #cbcbcb;
+    }
+    .rally-task-working {
+        border: 1px solid #4211d4;
+    }
+    .rally-task-working div span {
+        color: #4211d4;
+        font-weight: bold;
+    }
+    .rally-task-done {
+    	background-color: #d6ffd6;
+        border: 1px solid #1b6941;
+    }
+    .rally-task-done div {
+        margin: 0 0 0 auto;
+    }
+    .rally-task-done div span {
+        color: #1b6941;
+        font-weight: bold;
     }
 
         /** filter bar **/
