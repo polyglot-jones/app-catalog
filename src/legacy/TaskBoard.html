@@ -246,6 +246,8 @@ function initTaskboard() {
                 } else if (item.Actuals >= 0.05) {
                 	taskIsWorking = true;
                 	taskClass.push('rally-task-working');
+                }else {
+                    taskClass.push('rally-task-promised');
                 }
             }
 
@@ -1007,6 +1009,7 @@ YAHOO.util.Event.addListener(window, 'load', initTaskboard);
 
     .rally-grid-item-content {
         margin: 0;
+        background-color: #ececec;
     }
 
     .rally-grid-column-header {
@@ -1094,6 +1097,7 @@ YAHOO.util.Event.addListener(window, 'load', initTaskboard);
 
         /** tasks **/
     .rally-task {
+        background-color: #ffffff;
         padding: .8em;
         font-size: .9em;
         text-align: left;
@@ -1145,8 +1149,12 @@ YAHOO.util.Event.addListener(window, 'load', initTaskboard);
         background-color: #ececec;
         border: 1px solid #cbcbcb;
     }
+    .rally-task-promised {
+        margin: 0 40px 0 0 ;
+    }
     .rally-task-working {
         border: 1px solid #4211d4;
+        margin: 0 20px;
     }
     .rally-task-working div span {
         color: #4211d4;
@@ -1155,6 +1163,7 @@ YAHOO.util.Event.addListener(window, 'load', initTaskboard);
     .rally-task-done {
     	background-color: #d6ffd6;
         border: 1px solid #1b6941;
+        margin: 0 0 0 40px;
     }
     .rally-task-done div {
         margin: 0 0 0 auto;
