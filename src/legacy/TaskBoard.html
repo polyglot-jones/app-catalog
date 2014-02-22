@@ -70,9 +70,9 @@ function initTaskboard() {
 
             "users": "/users?fetch=displayname,loginname,emailaddress,objectid" + paging,
 
-            "tasks": "/tasks?fetch=taskindex,name,objectid,formattedid,owner,blocked,estimate,todo,actuals,state,workproduct&query=(Iteration = ${iteration})" + scoping + paging,
+            "tasks": "/tasks?fetch=taskindex,name,objectid,formattedid,owner,blocked,estimate,todo,actuals,state,workproduct,description&query=(Iteration = ${iteration})" + scoping + paging,
 
-            "stories": "/hierarchicalrequirement?fetch=rank,blocked,formattedid,name,objectid,owner,project,schedulestate,taskestimatetotal,taskremainingtotal,taskactualtotal,tasks&order=Rank&query=(Iteration = ${iteration})" + scoping + paging,
+            "stories": "/hierarchicalrequirement?fetch=rank,blocked,formattedid,name,objectid,owner,project,schedulestate,taskestimatetotal,taskremainingtotal,taskactualtotal,description,tasks&order=Rank&query=(Iteration = ${iteration})" + scoping + paging,
             "defects": "/defect?fetch=rank,blocked,formattedid,name,objectid,owner,project,schedulestate,taskestimatetotal,taskremainingtotal,taskactualtotal&order=Rank&query=(Iteration = ${iteration})" + scoping + paging,
             "defectsuite": "/defectsuite?fetch=rank,blocked,formattedid,name,objectid,owner,project,schedulestate,taskestimatetotal,taskremainingtotal,taskactualtotal&order=Rank&query=(Iteration = ${iteration})" + scoping + paging,
             "testsets": "/testset?fetch=rank,blocked,formattedid,name,objectid,owner,project,schedulestate,taskestimatetotal,taskremainingtotal,taskactualtotal&query=(Iteration = ${iteration})" + scoping + paging
@@ -162,7 +162,11 @@ function initTaskboard() {
                 timeClass.push('de-emphasis');
             }
 
-            html.push('<div class="' + divClass.join(' ') + '" id="' + divId + '">');
+            var tempDiv = document.createElement("div");
+            tempDiv.innerHTML = value.Description;
+            var descriptionSansTags = tempDiv.textContent || tempDiv.innerText || "No Description";
+
+            html.push('<div class="' + divClass.join(' ') + '" id="' + divId + '" title="'+descriptionSansTags+'">');
 
             state = new RALLY.toolkit.renderer.StateRenderer({
                 schema: schema.State,
@@ -256,7 +260,11 @@ function initTaskboard() {
                 taskClass.push('de-emphasis');
             }
 
-            html.push('<div class="' + taskClass.join(' ') + '" id="rally-task-' + item.ObjectID + '">');
+            var tempDiv = document.createElement("div");
+            tempDiv.innerHTML = item.Description;
+            var descriptionSansTags = tempDiv.textContent || tempDiv.innerText || "No Description";
+
+            html.push('<div class="' + taskClass.join(' ') + '" id="rally-task-' + item.ObjectID + '" title="'+descriptionSansTags+'">');
             html.push('<div class="actions">');
             html.push('<img id="' + editIconId + '" src="' + RALLY.toolkit.Connection.getServerURL() + '/images/icon_pencil.gif" alt="Edit" />');
             html.push('<img id="' + deleteIconId + '" src="' + RALLY.toolkit.Connection.getServerURL() + '/images/icon_delete.gif" alt="Delete" />');
