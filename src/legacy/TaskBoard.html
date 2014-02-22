@@ -215,6 +215,7 @@ function initTaskboard() {
                     schema = modelSchema.Task,
                     contentStyle = '',
                     editIconId = 'edit-' + Dom.generateId(),
+                    moveRightIconId = 'move-right-' + Dom.generateId(),
                     deleteIconId = 'delete-' + Dom.generateId();
 
             // owner could be an object literal, or a string (if the user has been deleted in the app)
@@ -236,8 +237,9 @@ function initTaskboard() {
                 taskClass.push('rally-task-blocked');
             }
 
-            var taskIsDone = false;
+            var taskIsPromised = false;
             var taskIsWorking = false;
+            var taskIsDone = false;
             if (item.State == 'Defined') {
                 todoClass.push('de-emphasis');
                 actClass.push('de-emphasis');
@@ -251,6 +253,7 @@ function initTaskboard() {
                 	taskIsWorking = true;
                 	taskClass.push('rally-task-working');
                 }else {
+                    taskIsPromised = true;
                     taskClass.push('rally-task-promised');
                 }
             }
@@ -266,8 +269,11 @@ function initTaskboard() {
 
             html.push('<div class="' + taskClass.join(' ') + '" id="rally-task-' + item.ObjectID + '" title="'+descriptionSansTags+'">');
             html.push('<div class="actions">');
-            html.push('<img id="' + editIconId + '" src="' + RALLY.toolkit.Connection.getServerURL() + '/images/icon_pencil.gif" alt="Edit" />');
-            html.push('<img id="' + deleteIconId + '" src="' + RALLY.toolkit.Connection.getServerURL() + '/images/icon_delete.gif" alt="Delete" />');
+            html.push('<img id="' + editIconId + '" src="' + RALLY.toolkit.Connection.getServerURL() + '/images/icon_pencil.gif" title="Edit"/>');
+            html.push('<img id="' + deleteIconId + '" src="' + RALLY.toolkit.Connection.getServerURL() + '/images/icon_delete.gif" title="Delete" />');
+            if (taskIsPromised || taskIsWorking) {
+                html.push('<img id="' + moveRightIconId + '" class="sprite-move-right" title="Shift Right" />');
+            }
             html.push('</div>');
 
             if (item.Owner && Lang.isValue(item.Owner.ObjectID)) {
@@ -318,6 +324,10 @@ function initTaskboard() {
             Event.purgeElement(deleteIconId);
             Event.addListener(deleteIconId, 'click', function (e) {
                 gridController.deleteItem(item);
+            });
+            Event.purgeElement(moveRightIconId);
+            Event.addListener(moveRightIconId, 'click', function (e) {
+                gridController.moveRight(item);
             });
         },
 
@@ -852,7 +862,17 @@ function initTaskboard() {
                 });
             }
         },
-
+        moveRight: function (task) {
+            if (task.Actuals <= 0.05) {
+                gridController.saveChanges(task, { 'Actuals': 0.1}, 'taskboard', function () {
+                    setStatus();
+                });
+            } else if (task.ToDo > 0) {
+                gridController.saveChanges(task, { 'Actuals': (task.Actuals > 0.15) ? task.Actuals + task.ToDo:task.ToDo, 'ToDo': 0 }, 'taskboard', function () {
+                    setStatus();
+                });
+            }
+        },
         refreshItem: function (item) {
             var that = this;
 
@@ -1011,6 +1031,13 @@ YAHOO.util.Event.addListener(window, 'load', initTaskboard);
         font-family: tahoma, geneva, helvetica, arial, sans-serif;
     }
 
+    .sprite-move-right {
+        height: 17px;
+        width: 17px;
+        border: red;
+        outline: 0;
+        background: url(/slm/images/sprites.gif) 0 -221px;
+    }
     .rally-grid-item {
         border: 0;
     }
