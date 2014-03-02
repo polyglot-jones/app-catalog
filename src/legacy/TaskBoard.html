@@ -175,7 +175,8 @@ function initTaskboard() {
             });
             html.push('<div class="state">' + state.display(false, value.ScheduleState == 'Accepted') + '</div>');
 
-            html.push('<div class="id">' + value.FormattedID + '</div>');
+            var storyLink = '__SERVER_URL__/detail/ar/'+value.ObjectID;
+            html.push('<div class="id"><a href="'+storyLink+'" target="_new">' + value.FormattedID + '</a></div>');
             html.push('<div class="name">' + RALLY.toolkit.niceSubstring(value.Name, 100) + '</div>');
             html.push('<div class="' + ownerClass.join(' ') + '">' + owner + '</div>');
 
@@ -285,7 +286,8 @@ function initTaskboard() {
             }
 
             html.push('<div style="' + contentStyle + '">');
-            html.push('<div class="id">' + item.FormattedID + '</div>');
+            var editLink = '__SERVER_URL__/detail/tk/'+item.ObjectID;
+            html.push('<div class="id"><a href="'+editLink+'" target="_new">' + item.FormattedID + '</a></div>');
             html.push('<div class="name">' + RALLY.toolkit.niceSubstring(item.Name) + '</div>');
             html.push('<div class="' + ownerClass.join(' ') + '">' + owner + '</div>');
 
