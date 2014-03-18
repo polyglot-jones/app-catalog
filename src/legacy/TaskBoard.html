@@ -164,7 +164,7 @@ function initTaskboard() {
 
             var tempDiv = document.createElement("div");
             tempDiv.innerHTML = value.Description;
-            var descriptionSansTags = tempDiv.textContent || tempDiv.innerText || "No Description";
+            var descriptionSansTags = RALLY.toolkit.HTML.escapeXMLEntities(tempDiv.textContent || tempDiv.innerText || "No Description");
 
             html.push('<div class="' + divClass.join(' ') + '" id="' + divId + '" title="'+descriptionSansTags+'">');
 
@@ -266,8 +266,8 @@ function initTaskboard() {
 
             var tempDiv = document.createElement("div");
             tempDiv.innerHTML = item.Description;
-            var descriptionSansTags = tempDiv.textContent || tempDiv.innerText || "No Description";
-
+            var descriptionSansTags = RALLY.toolkit.HTML.escapeXMLEntities(tempDiv.textContent || tempDiv.innerText || "No Description");
+            descriptionSansTags =
             html.push('<div class="' + taskClass.join(' ') + '" id="rally-task-' + item.ObjectID + '" title="'+descriptionSansTags+'">');
             html.push('<div class="actions">');
             html.push('<img id="' + editIconId + '" src="' + RALLY.toolkit.Connection.getServerURL() + '/images/icon_pencil.gif" title="Edit"/>');
@@ -902,7 +902,7 @@ function initTaskboard() {
             for (i in ownerMap) {
                 owners.push(RALLY.toolkit.HTML.unescapeXMLEntities(i));
             }
-
+description
             return owners;
         },
 
